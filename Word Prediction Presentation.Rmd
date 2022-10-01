@@ -1,0 +1,66 @@
+---
+title: "Word Prediction Presentation"
+author: "Andrew Dieterich"
+date: "`r Sys.Date()`"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Project Overview
+
+In this presentation we are looking at how to take twitter, blog post, and news strings of text
+And make them into one, two, three, and four n-grams using a text mining package (quanteda)
+With the goal of doing text next-word prediction similarly to Swift Key
+
+## Background Information
+
+ - n-gram background info: https://en.wikipedia.org/wiki/N-gram
+ 
+ - R Studio Shiny App page: https://www.shinyapps.io
+ 
+ - Text Mining in R: https://www.coursera.org/learn/data-science-project/supplement/FrBtO/project-overview
+
+ - Data Source: https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip
+
+
+## Code Examples
+
+```{r, eval=FALSE}
+set.seed(1234567)
+data.sample <- sample(twitter, length(twitter) * 0.10)
+saveRDS(data.sample, 'sample_text_twitter.rds')
+twitter_sample <- readRDS("sample_text_twitter.rds")
+
+Sample_twitter <- corpus(twitter_sample)
+token_twitter <- tokens(Sample_twitter, remove_separators = TRUE, remove_punct = TRUE)
+token_twitter <- tokens_remove(token_twitter, pattern = stopwords('en'))
+token_twitter <- tokens_wordstem(token_twitter)
+token_twitter <- tokens_tolower(token_twitter)
+
+ngram_twitter <- tokens_ngrams(token_twitter, n = 1)
+top_ngrams_twitter <- topfeatures(dfm(ngram_twitter), 20)
+
+barplot(height = top_ngrams_twitter, names.arg = names(top_ngrams_twitter),
+        las = 2, main = "One n-gram frequency of Twitter sample")
+```
+
+## How to Use the Shiny App
+To use the shiny app, you only need to enter text into the text box
+
+Then select how many words (on the slider) to be predicted
+
+Then click the button, and observe the output words that are predicted
+
+By the model, based on the compiled n-gram .Rdata file
+
+## File links
+
+ - The Github folder is here
+
+ - And the Shiny App can be found here
+
+Thank you!
+

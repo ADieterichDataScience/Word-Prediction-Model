@@ -1,0 +1,79 @@
+---
+title: "WordPredictMarkdown"
+author: "Andrew Dieterich"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Project Overview
+
+In this presentation we are looking at how to take twitter, blog post, and news strings of text
+And make them into one, two, three, and four n-grams using a text mining package (quanteda)
+With the goal of doing text next-word prediction similarly to Swift Key
+
+## Background Information
+
+n-gram background info: https://en.wikipedia.org/wiki/N-gram
+R Studio Shiny App page: https://www.shinyapps.io
+Text Mining in R: https://www.coursera.org/learn/data-science-project/supplement/FrBtO/project-overview
+
+Data Source: https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip
+
+## Code Examples
+
+# Sampling the twitter data file so my computer can work with it (10% of twitter file)
+set.seed(1234567)
+data.sample <- sample(twitter, length(twitter) * 0.10)
+saveRDS(data.sample, 'sample_text_twitter.rds')
+twitter_sample <- readRDS("sample_text_twitter.rds")
+
+# Create a Corpus and cleaning, creating tokenization of twitter sample
+Sample_twitter <- corpus(twitter_sample)
+token_twitter <- tokens(Sample_twitter, remove_separators = TRUE, remove_punct = TRUE)
+token_twitter <- tokens_remove(token_twitter, pattern = stopwords('en'))
+token_twitter <- tokens_wordstem(token_twitter)
+token_twitter <- tokens_tolower(token_twitter)
+
+ngram_twitter <- tokens_ngrams(token_twitter, n = 1)
+top_ngrams_twitter <- topfeatures(dfm(ngram_twitter), 20)
+
+barplot(height = top_ngrams_twitter, names.arg = names(top_ngrams_twitter),
+        las = 2, main = "One n-gram frequency of Twitter sample")
+
+## Creating separate n-gram files before combining
+# creating separate files of 4-ngram strings
+ngram4_news <- tokens_ngrams(token_news, n = 4)
+ngram4_twitter <- tokens_ngrams(token_twitter, n = 4)
+ngram4_blogs <- tokens_ngrams(token_blogs, n = 4)
+
+names(ngram4_news) <- c("ngrams","news")
+names(ngram4_twitter) <- c("ngrams","twitter")
+names(ngram4_blogs) <- c("ngrams","blogs")
+
+save(ngram4_news, file="news.RData")
+save(ngram4_twitter, file="twitter.RData")
+save(ngram4_blogs, file="blogs.RData")
+
+## How to Use the Shiny App
+To use the shiny app, you only need to enter text into the text box
+
+Then select how many words (on the slider) to be predicted
+
+Then click the button, and observe the output words that are predicted
+
+By the model, based on the compiled n-gram .Rdata file
+
+read.JPEG("Shiny_app.jpeg")
+
+## File links
+
+The Github folder is here
+
+And the Shiny App can be found here
+
+
+
+
+Thank you!
+
+##
